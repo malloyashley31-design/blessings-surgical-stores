@@ -524,8 +524,20 @@ if (mode === 'staff') {
           .classList.add('hidden');
 
         if (mode === 'staff') {
-          lookupStaff(value);
-        }
+
+  document.getElementById('staffManual').value =
+    value;
+
+  document.getElementById('staffStatus').innerHTML =
+    '<div class="success">' +
+    '<b>QR READ:</b><br>' +
+    JSON.stringify(value) +
+    '<br><br><b>Length:</b> ' +
+    value.length +
+    '</div>';
+
+  return;
+}
 
         else if (mode === 'location') {
           lookupLocation(value);
