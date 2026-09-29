@@ -516,20 +516,30 @@ async function openScanner(mode) {
 
 async function handleScan(value) {
 
+  if (scanLocked) {
+    return;
+  }
+
+  scanLocked = true;
+
+  value = String(value).trim();
+
   await stopScanner();
 
   document.getElementById('scannerOverlay')
     .classList.add('hidden');
 
   if (scanMode === 'staff') {
+    lookupStaff(value);
+  }
 
-  alert(
-    'Scanned staff value: [' +
-    value +
-    ']'
-  );
+  else if (scanMode === 'location') {
+    lookupLocation(value);
+  }
 
-  lookupStaff(value);
+  else if (scanMode === 'item') {
+    lookupItem(value);
+  }
 }
 
   else if (scanMode === 'location') {
