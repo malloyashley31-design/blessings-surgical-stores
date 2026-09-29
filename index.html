@@ -9,7 +9,7 @@
       initial-scale=1,
       maximum-scale=1">
 
-<title>Blessings Surgical Stores</title>
+<title>Blessings Surgical Stores — Donation Intake</title>
 
 <script src="https://unpkg.com/html5-qrcode"></script>
 
@@ -168,8 +168,8 @@ select {
 <body>
 
 <div class="header">
-  Blessings Surgical Stores
-  <div style="font-size:12px;font-weight:normal;margin-top:6px;">BUILD 13</div>
+  Blessings Surgical Stores — Donation Intake
+  <div style="font-size:12px;font-weight:normal;margin-top:6px;">TEMP ADD-ONLY BUILD</div>
 </div>
 
 
@@ -198,7 +198,7 @@ select {
 <!-- STAFF -->
 <div id="staffScreen" class="card">
 
-  <h2>Scan Your Staff QR</h2>
+  <h2>Staff Sign-In</h2>
 
   <button class="camera"
           onclick="openScanner('staff')">
@@ -206,12 +206,14 @@ select {
   </button>
 
   <input id="staffManual"
-         placeholder="Or enter staff ID manually">
+         placeholder="Enter staff ID manually if preferred">
 
   <button class="primary"
           onclick="manualStaff()">
     Continue
   </button>
+
+  <div class="context">Temporary intake mode: ADD stock only. No location scan required.</div>
 
   <div id="staffStatus"></div>
 
@@ -221,21 +223,6 @@ select {
 <!-- ACTION -->
 <div id="actionScreen"
      class="card hidden">
-
-  <div id="staffDisplay"></div>
-
-  <h2>What are you doing?</h2>
-
-  <button class="remove"
-          onclick="chooseAction('REMOVE')">
-    REMOVE STOCK
-  </button>
-
-  <button class="add"
-          onclick="chooseAction('ADD')">
-    ADD STOCK
-  </button>
-
 </div>
 
 
@@ -267,7 +254,7 @@ select {
 <div id="sourceScreen"
      class="card hidden">
 
-  <h2>Stock Source</h2>
+  <h2>Donation / Stock Source</h2>
 
   <select id="sourceSelect"></select>
 
@@ -286,7 +273,7 @@ select {
 <div id="itemScreen"
      class="card hidden">
 
-  <h2>Scan Items</h2>
+  <h2>Scan Incoming Supplies</h2>
 
   <div id="contextDisplay"
        class="context"></div>
@@ -312,7 +299,7 @@ select {
 
   <button class="primary"
           onclick="finishSession()">
-    FINISH SESSION
+    SAVE DONATION / ADDITION
   </button>
 
 </div>
@@ -371,7 +358,7 @@ select {
 <div id="completeScreen"
      class="card hidden">
 
-  <h2>✓ Session Complete</h2>
+  <h2>✓ Donation Saved</h2>
 
   <div id="completeMessage"
        class="success">
@@ -379,7 +366,7 @@ select {
 
   <button class="primary"
           onclick="resetSystem()">
-    NEXT PERSON
+    START NEXT ADDITION
   </button>
 
 </div>
@@ -648,7 +635,11 @@ function lookupStaff(code) {
           session.staff.role +
           '</div>';
 
-      show('actionScreen');
+      session.action = 'ADD';
+
+      loadSources();
+
+      show('sourceScreen');
     }
   );
 }
@@ -659,21 +650,9 @@ function lookupStaff(code) {
 // --------------------------------
 
 function chooseAction(action) {
-
-  session.action = action;
-
-  if (action === 'REMOVE') {
-
-    show('locationScreen');
-
-  }
-
-  else {
-
-    loadSources();
-
-    show('sourceScreen');
-  }
+  session.action = 'ADD';
+  loadSources();
+  show('sourceScreen');
 }
 
 
@@ -822,9 +801,9 @@ function confirmSource() {
 function beginItems() {
 
   const context =
-    session.action === 'REMOVE'
-      ? session.destination.name
-      : session.source.name;
+    session.source
+      ? session.source.name
+      : 'Incoming Stock';
 
   document.getElementById(
     'contextDisplay'
@@ -1046,19 +1025,10 @@ function finishSession() {
     return;
   }
 
-  if (session.action === 'REMOVE') {
+  session.action = 'ADD';
+  session.smartEntered = 'N/A';
 
-    show('smartScreen');
-
-  }
-
-  else {
-
-    session.smartEntered =
-      'N/A';
-
-    submitSession();
-  }
+  submitSession();
 }
 
 
