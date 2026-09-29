@@ -169,7 +169,7 @@ select {
 
 <div class="header">
   Blessings Surgical Stores — Donation Intake
-  <div style="font-size:12px;font-weight:normal;margin-top:6px;">TEMP ADD-ONLY BUILD</div>
+  <div style="font-size:12px;font-weight:normal;margin-top:6px;">TEMP ADD-ONLY — NO STAFF LOOKUP</div>
 </div>
 
 
@@ -198,24 +198,17 @@ select {
 <!-- STAFF -->
 <div id="staffScreen" class="card">
 
-  <h2>Staff Sign-In</h2>
+  <h2>Donation Intake</h2>
 
-  <button class="camera"
-          onclick="openScanner('staff')">
-    📷 SCAN STAFF QR
+  <div class="context">
+    Temporary intake mode: ADD stock only.<br>
+    Staff lookup and location scan are disabled for speed and reliability.
+  </div>
+
+  <button class="add"
+          onclick="startDonationIntake()">
+    START ADDING SUPPLIES
   </button>
-
-  <input id="staffManual"
-         placeholder="Enter staff ID manually if preferred">
-
-  <button class="primary"
-          onclick="manualStaff()">
-    Continue
-  </button>
-
-  <div class="context">Temporary intake mode: ADD stock only. No location scan required.</div>
-
-  <div id="staffStatus"></div>
 
 </div>
 
@@ -584,64 +577,19 @@ async function closeScanner() {
 // STAFF
 // --------------------------------
 
-function manualStaff() {
+function startDonationIntake() {
 
-  const code =
-    document.getElementById('staffManual')
-      .value.trim();
+  session.staff = {
+    id: 'BPH/C059',
+    name: 'Ashley Malloy',
+    role: 'Director of Operations'
+  };
 
-  if (code) {
-    lookupStaff(code);
-  }
-}
+  session.action = 'ADD';
 
+  loadSources();
 
-function lookupStaff(code) {
-
-  setStatus(
-  'staffStatus',
-  'Looking up staff...',
-  'success'
-);
-
-  jsonp(
-    API_URL +
-    '?action=staff' +
-    '&code=' +
-    encodeURIComponent(code),
-
-    function(result) {
-
-      if (!result.ok) {
-
-        setStatus(
-          'staffStatus',
-          result.error,
-          'error'
-        );
-
-        return;
-      }
-
-      session.staff =
-        result.staff;
-
-      document.getElementById('staffDisplay')
-        .innerHTML =
-          '<div class="staff-name">' +
-          session.staff.name +
-          '</div>' +
-          '<div>' +
-          session.staff.role +
-          '</div>';
-
-      session.action = 'ADD';
-
-      loadSources();
-
-      show('sourceScreen');
-    }
-  );
+  show('sourceScreen');
 }
 
 
@@ -1200,10 +1148,6 @@ function resetSystem() {
   pendingItem = null;
 
   document.getElementById(
-    'staffManual'
-  ).value = '';
-
-  document.getElementById(
     'locationManual'
   ).value = '';
 
@@ -1214,10 +1158,6 @@ function resetSystem() {
   document.getElementById(
     'sourceDetail'
   ).value = '';
-
-  document.getElementById(
-    'staffStatus'
-  ).innerHTML = '';
 
   document.getElementById(
     'locationStatus'
