@@ -169,6 +169,7 @@ select {
 
 <div class="header">
   Blessings Surgical Stores
+  <div style="font-size:12px;font-weight:normal;margin-top:6px;">BUILD 13</div>
 </div>
 
 
@@ -478,9 +479,7 @@ async function openScanner(mode) {
   try {
 
     await scanner.start(
-
       { facingMode: 'environment' },
-
       {
         fps: 10,
         qrbox: {
@@ -492,70 +491,65 @@ async function openScanner(mode) {
       function(decodedText) {
 
         if (scanLocked) return;
-
         scanLocked = true;
 
-        let value =
-  String(decodedText).trim();
+        let value = String(decodedText).trim();
+        const mode = scanMode;
 
-const mode =
-  scanMode;
+        // Staff QR cleanup only.
+        if (mode === 'staff') {
+          const bphMatch = value.match(/BPH\/[A-Z]\d{3}/i);
+          const numericMatch = value.match(/\b\d{6}\b/);
 
-// Staff QRs may contain extra printed/encoded information.
-// Pull out the actual Blessings Staff ID.
-if (mode === 'staff') {
+          if (bphMatch) {
+            value = bphMatch[0].toUpperCase();
+          } else if (numericMatch) {
+            value = numericMatch[0];
+          }
+        }
 
-  const bphMatch =
-    value.match(/BPH\/[A-Z]\d{3}/i);
-
-  const numericMatch =
-    value.match(/\b\d{6}\b/);
-
-  if (bphMatch) {
-    value = bphMatch[0].toUpperCase();
-  }
-
-  else if (numericMatch) {
-    value = numericMatch[0];
-  }
-}
-
+        // Hide camera first.
         document.getElementById('scannerOverlay')
           .classList.add('hidden');
 
-     if (mode === 'staff') {
+        // IMPORTANT: scanning never contacts Apps Script.
+        // It only fills the appropriate field.
+        if (mode === 'staff') {
+          document.getElementById('staffManual').value = value;
+          setStatus(
+            'staffStatus',
+            'Staff QR captured. Tap Continue.',
+            'success'
+          );
+        }
 
-  document.getElementById('staffManual').value =
-    value;
+        else if (mode === 'location') {
+          document.getElementById('locationManual').value = value;
+          setStatus(
+            'locationStatus',
+            'Location QR captured. Tap Continue.',
+            'success'
+          );
+        }
 
-  return;
-}
+        else if (mode === 'item') {
+          document.getElementById('itemManual').value = value;
+          setStatus(
+            'itemStatus',
+            'Item QR captured. Tap Find Item.',
+            'success'
+          );
+        }
 
-else if (mode === 'location') {
-
-  document.getElementById('locationManual').value =
-    value;
-
-  return;
-}
-
-else if (mode === 'item') {
-
-  document.getElementById('itemManual').value =
-    value;
-
-  return;
-}
-
+        // Shut camera down after field is filled.
         setTimeout(function() {
           stopScanner();
-        }, 100);
+        }, 150);
       },
 
       function() {
-        // Normal while looking for a QR.
+        // Ignore scan misses while searching.
       }
-
     );
 
   }
@@ -577,7 +571,6 @@ async function stopScanner() {
   if (!scanner) return;
 
   const activeScanner = scanner;
-
   scanner = null;
 
   try {
@@ -600,7 +593,6 @@ async function closeScanner() {
   await stopScanner();
 }
 
-
 // --------------------------------
 // STAFF
 // --------------------------------
@@ -620,10 +612,10 @@ function manualStaff() {
 function lookupStaff(code) {
 
   setStatus(
-    'staffStatus',
-    'Looking up staff...',
-    'success'
-  );
+  'staffStatus',
+  'Looking up staff...',
+  'success'
+);
 
   jsonp(
     API_URL +
