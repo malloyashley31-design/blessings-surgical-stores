@@ -1,15 +1,20 @@
 <!DOCTYPE html>
 <html>
 <head>
+
   <meta charset="UTF-8">
+
   <meta name="viewport"
-        content="width=device-width, initial-scale=1, maximum-scale=1">
+        content="width=device-width,
+        initial-scale=1,
+        maximum-scale=1">
 
   <title>Blessings Surgical Stores</title>
 
   <script src="https://unpkg.com/html5-qrcode"></script>
 
   <style>
+
     body {
       font-family: Arial, sans-serif;
       background: #f3f5f7;
@@ -22,7 +27,7 @@
       color: white;
       padding: 22px;
       text-align: center;
-      font-size: 25px;
+      font-size: 26px;
       font-weight: bold;
     }
 
@@ -32,6 +37,7 @@
       background: white;
       padding: 24px;
       border-radius: 14px;
+      box-shadow: 0 2px 8px rgba(0,0,0,.12);
     }
 
     button {
@@ -46,28 +52,37 @@
     }
 
     #reader {
-      margin-top: 18px;
       width: 100%;
+      margin-top: 18px;
     }
 
-    #result {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 10px;
+    .success {
       background: #d9ead3;
-      font-size: 22px;
-      display: none;
-      word-break: break-word;
+      padding: 18px;
+      margin-top: 18px;
+      border-radius: 10px;
+      font-size: 20px;
     }
 
-    #error {
-      margin-top: 18px;
-      padding: 18px;
-      border-radius: 10px;
+    .error {
       background: #f4cccc;
+      padding: 18px;
+      margin-top: 18px;
+      border-radius: 10px;
+      font-size: 18px;
+    }
+
+    .hidden {
       display: none;
     }
+
+    .name {
+      font-size: 26px;
+      font-weight: bold;
+    }
+
   </style>
+
 </head>
 
 <body>
@@ -76,45 +91,49 @@
   Blessings Surgical Stores
 </div>
 
+
 <div class="card">
 
-  <h2>iPad QR Camera Test</h2>
-
-  <p>
-    Tap the button below, allow camera access,
-    and scan one of the printed staff QR codes.
-  </p>
+  <h2>Scan Your Staff QR</h2>
 
   <button onclick="startScanner()">
-    📷 START QR CAMERA
+    📷 SCAN STAFF QR
   </button>
 
   <div id="reader"></div>
 
-  <div id="result"></div>
-
-  <div id="error"></div>
+  <div id="status"></div>
 
 </div>
 
 
 <script>
 
+const API_URL =
+  'https://script.google.com/macros/s/AKfycbyez8j8DoDMFF1KwrKO4uVLLjCS4VNNPuYIzXEshnpwa6FwT9cTWL7am0hbJVMPMmY35A/exec';
+
 let scanner = null;
+
 
 async function startScanner() {
 
-  document.getElementById("result").style.display = "none";
-  document.getElementById("error").style.display = "none";
+  document.getElementById('status')
+    .innerHTML = '';
 
   try {
 
-    scanner = new Html5Qrcode("reader");
+    scanner =
+      new Html5Qrcode('reader');
 
     await scanner.start(
-      { facingMode: "environment" },
+
+      {
+        facingMode: 'environment'
+      },
+
       {
         fps: 10,
+
         qrbox: function(width, height) {
 
           const size =
@@ -131,37 +150,143 @@ async function startScanner() {
 
       async function(decodedText) {
 
-        document.getElementById("result")
-          .innerHTML =
-          "<b>QR READ SUCCESSFULLY:</b><br><br>" +
-          decodedText;
-
-        document.getElementById("result")
-          .style.display = "block";
-
         try {
+
           await scanner.stop();
+
         } catch(e) {}
 
+        lookupStaff(
+          decodedText.trim()
+        );
       },
 
       function(errorMessage) {
-        // Normal while camera searches for QR.
+        // Ignore while camera is searching.
       }
+
     );
 
   }
 
   catch(err) {
 
-    document.getElementById("error")
-      .innerText =
-      "Camera error: " + err;
-
-    document.getElementById("error")
-      .style.display = "block";
-
+    showError(
+      'Camera error: ' + err
+    );
   }
+}
+
+
+function lookupStaff(staffCode) {
+
+  document.getElementById('status')
+    .innerHTML =
+    '<div class="success">' +
+    'Looking up ' +
+    staffCode +
+    '...' +
+    '</div>';
+
+  jsonp(
+    API_URL +
+    '?action=staff' +
+    '&code=' +
+    encodeURIComponent(staffCode),
+
+    function(result) {
+
+      if (!result.ok) {
+
+        showError(
+          result.error ||
+          'Staff lookup failed.'
+        );
+
+        return;
+      }
+
+      const staff =
+        result.staff;
+
+      document.getElementById('status')
+        .innerHTML =
+        '<div class="success">' +
+        '<div class="name">' +
+        staff.name +
+        '</div>' +
+        '<div>' +
+        staff.role +
+        '</div>' +
+        '<br>' +
+        '<div>Staff ID: ' +
+        staff.id +
+        '</div>' +
+        '</div>';
+    }
+  );
+}
+
+
+function jsonp(url, callback) {
+
+  const callbackName =
+    'cb_' +
+    Date.now() +
+    '_' +
+    Math.floor(
+      Math.random() * 100000
+    );
+
+  window[callbackName] =
+    function(data) {
+
+      try {
+        callback(data);
+      }
+
+      finally {
+
+        delete window[callbackName];
+
+        script.remove();
+      }
+    };
+
+
+  const script =
+    document.createElement('script');
+
+  script.src =
+    url +
+    '&callback=' +
+    callbackName;
+
+  script.onerror =
+    function() {
+
+      delete window[callbackName];
+
+      script.remove();
+
+      showError(
+        'Could not connect to the inventory system.'
+      );
+    };
+
+  document.body.appendChild(
+    script
+  );
+}
+
+
+function showError(message) {
+
+  document.getElementById('status')
+    .innerHTML =
+    '<div class="error">' +
+    message +
+    '</div>';
 }
 
 </script>
