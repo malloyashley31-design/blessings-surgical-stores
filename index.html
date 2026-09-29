@@ -421,6 +421,7 @@ let session = {
 let scanner = null;
 let scanMode = null;
 let pendingItem = null;
+let scanLocked = false;
 
 
 // --------------------------------
@@ -446,7 +447,7 @@ function show(id) {
 async function openScanner(mode) {
 
   scanMode = mode;
-  
+  scanLocked = false;
 
   const titles = {
     staff: 'Scan Staff QR',
@@ -460,8 +461,19 @@ async function openScanner(mode) {
   document.getElementById('scannerOverlay')
     .classList.remove('hidden');
 
-  scanner =
-    new Html5Qrcode('reader');
+  if (scanner) {
+    try {
+      await scanner.stop();
+    } catch(e) {}
+
+    try {
+      scanner.clear();
+    } catch(e) {}
+
+    scanner = null;
+  }
+
+  scanner = new Html5Qrcode('reader');
 
   try {
 
@@ -470,31 +482,47 @@ async function openScanner(mode) {
       { facingMode: 'environment' },
 
       {
-        fps: 12,
-
-        qrbox: function(width, height) {
-
-          const size =
-            Math.floor(
-              Math.min(width, height) * 0.70
-            );
-
-          return {
-            width: size,
-            height: size
-          };
+        fps: 10,
+        qrbox: {
+          width: 250,
+          height: 250
         }
       },
 
       function(decodedText) {
 
-        handleScan(
-          String(decodedText).trim()
-        );
+        if (scanLocked) return;
+
+        scanLocked = true;
+
+        const value =
+          String(decodedText).trim();
+
+        const mode =
+          scanMode;
+
+        document.getElementById('scannerOverlay')
+          .classList.add('hidden');
+
+        if (mode === 'staff') {
+          lookupStaff(value);
+        }
+
+        else if (mode === 'location') {
+          lookupLocation(value);
+        }
+
+        else if (mode === 'item') {
+          lookupItem(value);
+        }
+
+        setTimeout(function() {
+          stopScanner();
+        }, 100);
       },
 
       function() {
-        // Ignore scanning errors while searching.
+        // Normal while looking for a QR.
       }
 
     );
@@ -513,24 +541,32 @@ async function openScanner(mode) {
 }
 
 
-async function handleScan(value) {
+async function stopScanner() {
 
-  await stopScanner();
+  if (!scanner) return;
+
+  const activeScanner = scanner;
+
+  scanner = null;
+
+  try {
+    await activeScanner.stop();
+  }
+  catch(e) {}
+
+  try {
+    activeScanner.clear();
+  }
+  catch(e) {}
+}
+
+
+async function closeScanner() {
 
   document.getElementById('scannerOverlay')
     .classList.add('hidden');
 
-  if (scanMode === 'staff') {
-    lookupStaff(value);
-  }
-
-  else if (scanMode === 'location') {
-    lookupLocation(value);
-  }
-
-  else if (scanMode === 'item') {
-    lookupItem(value);
-  }
+  await stopScanner();
 }
 
 
@@ -553,10 +589,10 @@ function manualStaff() {
 function lookupStaff(code) {
 
   setStatus(
-  'staffStatus',
-  'Scanned value: [' + code + '] — looking up staff...',
-  'success'
-);
+    'staffStatus',
+    'Looking up staff...',
+    'success'
+  );
 
   jsonp(
     API_URL +
