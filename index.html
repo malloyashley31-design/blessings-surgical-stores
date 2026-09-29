@@ -495,11 +495,30 @@ async function openScanner(mode) {
 
         scanLocked = true;
 
-        const value =
-          String(decodedText).trim();
+        let value =
+  String(decodedText).trim();
 
-        const mode =
-          scanMode;
+const mode =
+  scanMode;
+
+// Staff QRs may contain extra printed/encoded information.
+// Pull out the actual Blessings Staff ID.
+if (mode === 'staff') {
+
+  const bphMatch =
+    value.match(/BPH\/[A-Z]\d{3}/i);
+
+  const numericMatch =
+    value.match(/\b\d{6}\b/);
+
+  if (bphMatch) {
+    value = bphMatch[0].toUpperCase();
+  }
+
+  else if (numericMatch) {
+    value = numericMatch[0];
+  }
+}
 
         document.getElementById('scannerOverlay')
           .classList.add('hidden');
