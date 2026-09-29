@@ -2,88 +2,168 @@
 <html>
 <head>
 
-  <meta charset="UTF-8">
+<meta charset="UTF-8">
 
-  <meta name="viewport"
-        content="width=device-width,
-        initial-scale=1,
-        maximum-scale=1">
+<meta name="viewport"
+      content="width=device-width,
+      initial-scale=1,
+      maximum-scale=1">
 
-  <title>Blessings Surgical Stores</title>
+<title>Blessings Surgical Stores</title>
 
-  <script src="https://unpkg.com/html5-qrcode"></script>
+<script src="https://unpkg.com/html5-qrcode"></script>
 
-  <style>
+<style>
 
-    body {
-      font-family: Arial, sans-serif;
-      background: #f3f5f7;
-      margin: 0;
-      color: #222;
-    }
+body {
+  font-family: Arial, sans-serif;
+  margin: 0;
+  background: #f3f5f7;
+  color: #222;
+}
 
-    .header {
-      background: #17365d;
-      color: white;
-      padding: 22px;
-      text-align: center;
-      font-size: 26px;
-      font-weight: bold;
-    }
+.header {
+  background: #17365d;
+  color: white;
+  padding: 20px;
+  text-align: center;
+  font-size: 26px;
+  font-weight: bold;
+}
 
-    .card {
-      max-width: 650px;
-      margin: 24px auto;
-      background: white;
-      padding: 24px;
-      border-radius: 14px;
-      box-shadow: 0 2px 8px rgba(0,0,0,.12);
-    }
+.card {
+  max-width: 650px;
+  margin: 20px auto;
+  padding: 22px;
+  background: white;
+  border-radius: 14px;
+  box-shadow: 0 2px 8px rgba(0,0,0,.12);
+}
 
-    button {
-      width: 100%;
-      padding: 18px;
-      font-size: 22px;
-      font-weight: bold;
-      border: none;
-      border-radius: 10px;
-      background: #17365d;
-      color: white;
-    }
+h2 {
+  color: #17365d;
+  margin-top: 0;
+}
 
-    #reader {
-      width: 100%;
-      margin-top: 18px;
-    }
+button,
+input,
+select {
+  width: 100%;
+  box-sizing: border-box;
+  padding: 15px;
+  margin: 8px 0;
+  font-size: 20px;
+  border-radius: 9px;
+}
 
-    .success {
-      background: #d9ead3;
-      padding: 18px;
-      margin-top: 18px;
-      border-radius: 10px;
-      font-size: 20px;
-    }
+button {
+  border: none;
+  font-weight: bold;
+  cursor: pointer;
+}
 
-    .error {
-      background: #f4cccc;
-      padding: 18px;
-      margin-top: 18px;
-      border-radius: 10px;
-      font-size: 18px;
-    }
+input,
+select {
+  border: 2px solid #ccc;
+}
 
-    .hidden {
-      display: none;
-    }
+.primary {
+  background: #17365d;
+  color: white;
+}
 
-    .name {
-      font-size: 26px;
-      font-weight: bold;
-    }
+.camera {
+  background: #0b5394;
+  color: white;
+}
 
-  </style>
+.add {
+  background: #38761d;
+  color: white;
+}
+
+.remove {
+  background: #990000;
+  color: white;
+}
+
+.secondary {
+  background: #ddd;
+  color: #222;
+}
+
+.hidden {
+  display: none;
+}
+
+.staff-name {
+  font-size: 26px;
+  font-weight: bold;
+}
+
+.context {
+  padding: 12px;
+  background: #d9eaf7;
+  border-radius: 8px;
+  margin-bottom: 15px;
+}
+
+.item-card {
+  border-bottom: 1px solid #ddd;
+  padding: 12px 0;
+}
+
+.success {
+  background: #d9ead3;
+  padding: 16px;
+  border-radius: 9px;
+  margin-top: 12px;
+}
+
+.error {
+  background: #f4cccc;
+  padding: 16px;
+  border-radius: 9px;
+  margin-top: 12px;
+}
+
+#scannerOverlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,.92);
+  z-index: 9999;
+  padding: 15px;
+}
+
+#scannerBox {
+  background: white;
+  max-width: 650px;
+  margin: 15px auto;
+  padding: 15px;
+  border-radius: 14px;
+}
+
+#reader {
+  width: 100%;
+}
+
+.scan-title {
+  text-align: center;
+  font-weight: bold;
+  font-size: 22px;
+  color: #17365d;
+  margin-bottom: 10px;
+}
+
+.qty-name {
+  font-size: 24px;
+  font-weight: bold;
+}
+
+</style>
 
 </head>
+
 
 <body>
 
@@ -92,19 +172,234 @@
 </div>
 
 
-<div class="card">
+<!-- CAMERA -->
+<div id="scannerOverlay" class="hidden">
+
+  <div id="scannerBox">
+
+    <div id="scanTitle"
+         class="scan-title">
+      Scan QR
+    </div>
+
+    <div id="reader"></div>
+
+    <button class="remove"
+            onclick="closeScanner()">
+      CANCEL
+    </button>
+
+  </div>
+
+</div>
+
+
+<!-- STAFF -->
+<div id="staffScreen" class="card">
 
   <h2>Scan Your Staff QR</h2>
 
-  <button onclick="startScanner()">
+  <button class="camera"
+          onclick="openScanner('staff')">
     📷 SCAN STAFF QR
   </button>
 
-  <div id="reader"></div>
+  <input id="staffManual"
+         placeholder="Or enter staff ID manually">
 
-  <div id="status"></div>
+  <button class="primary"
+          onclick="manualStaff()">
+    Continue
+  </button>
+
+  <div id="staffStatus"></div>
 
 </div>
+
+
+<!-- ACTION -->
+<div id="actionScreen"
+     class="card hidden">
+
+  <div id="staffDisplay"></div>
+
+  <h2>What are you doing?</h2>
+
+  <button class="remove"
+          onclick="chooseAction('REMOVE')">
+    REMOVE STOCK
+  </button>
+
+  <button class="add"
+          onclick="chooseAction('ADD')">
+    ADD STOCK
+  </button>
+
+</div>
+
+
+<!-- DESTINATION -->
+<div id="locationScreen"
+     class="card hidden">
+
+  <h2>Scan Destination</h2>
+
+  <button class="camera"
+          onclick="openScanner('location')">
+    📷 SCAN LOCATION QR
+  </button>
+
+  <input id="locationManual"
+         placeholder="Or enter location code manually">
+
+  <button class="primary"
+          onclick="manualLocation()">
+    Continue
+  </button>
+
+  <div id="locationStatus"></div>
+
+</div>
+
+
+<!-- SOURCE -->
+<div id="sourceScreen"
+     class="card hidden">
+
+  <h2>Stock Source</h2>
+
+  <select id="sourceSelect"></select>
+
+  <input id="sourceDetail"
+         placeholder="Donor / supplier / details (optional)">
+
+  <button class="primary"
+          onclick="confirmSource()">
+    Continue
+  </button>
+
+</div>
+
+
+<!-- ITEMS -->
+<div id="itemScreen"
+     class="card hidden">
+
+  <h2>Scan Items</h2>
+
+  <div id="contextDisplay"
+       class="context"></div>
+
+  <button class="camera"
+          onclick="openScanner('item')">
+    📷 SCAN ITEM QR
+  </button>
+
+  <input id="itemManual"
+         placeholder="Or enter item code manually">
+
+  <button class="primary"
+          onclick="manualItem()">
+    Find Item
+  </button>
+
+  <div id="itemStatus"></div>
+
+  <h2>Current Session</h2>
+
+  <div id="cart"></div>
+
+  <button class="primary"
+          onclick="finishSession()">
+    FINISH SESSION
+  </button>
+
+</div>
+
+
+<!-- QUANTITY -->
+<div id="quantityScreen"
+     class="card hidden">
+
+  <h2>Quantity</h2>
+
+  <div id="quantityItemName"
+       class="qty-name"></div>
+
+  <div id="quantityStock"></div>
+
+  <input id="quantity"
+         type="number"
+         min="1"
+         inputmode="numeric"
+         placeholder="Enter quantity">
+
+  <button class="primary"
+          onclick="confirmQuantity()">
+    ADD ITEM
+  </button>
+
+  <button class="secondary"
+          onclick="show('itemScreen')">
+    CANCEL
+  </button>
+
+</div>
+
+
+<!-- SMART -->
+<div id="smartScreen"
+     class="card hidden">
+
+  <h2>Entered in SMART?</h2>
+
+  <button class="add"
+          onclick="setSmart('Yes')">
+    YES
+  </button>
+
+  <button class="remove"
+          onclick="setSmart('No')">
+    NO
+  </button>
+
+</div>
+
+
+<!-- COMPLETE -->
+<div id="completeScreen"
+     class="card hidden">
+
+  <h2>✓ Session Complete</h2>
+
+  <div id="completeMessage"
+       class="success">
+  </div>
+
+  <button class="primary"
+          onclick="resetSystem()">
+    NEXT PERSON
+  </button>
+
+</div>
+
+
+<!-- Hidden form used for reliable Apps Script POST -->
+<iframe name="submitFrame"
+        id="submitFrame"
+        class="hidden">
+</iframe>
+
+<form id="submitForm"
+      method="POST"
+      target="submitFrame"
+      class="hidden">
+
+  <input type="hidden"
+         name="payload"
+         id="payloadField">
+
+</form>
 
 
 <script>
@@ -112,33 +407,75 @@
 const API_URL =
   'https://script.google.com/macros/s/AKfycbyez8j8DoDMFF1KwrKO4uVLLjCS4VNNPuYIzXEshnpwa6FwT9cTWL7am0hbJVMPMmY35A/exec';
 
+
+let session = {
+  staff: null,
+  action: null,
+  destination: null,
+  source: null,
+  sourceDetail: '',
+  items: [],
+  smartEntered: null
+};
+
 let scanner = null;
+let scanMode = null;
+let pendingItem = null;
 
 
-async function startScanner() {
+// --------------------------------
+// SCREEN
+// --------------------------------
 
-  document.getElementById('status')
-    .innerHTML = '';
+function show(id) {
+
+  document.querySelectorAll('.card')
+    .forEach(function(card) {
+      card.classList.add('hidden');
+    });
+
+  document.getElementById(id)
+    .classList.remove('hidden');
+}
+
+
+// --------------------------------
+// QR SCANNER
+// --------------------------------
+
+async function openScanner(mode) {
+
+  scanMode = mode;
+
+  const titles = {
+    staff: 'Scan Staff QR',
+    location: 'Scan Location QR',
+    item: 'Scan Item QR'
+  };
+
+  document.getElementById('scanTitle')
+    .innerText = titles[mode];
+
+  document.getElementById('scannerOverlay')
+    .classList.remove('hidden');
+
+  scanner =
+    new Html5Qrcode('reader');
 
   try {
 
-    scanner =
-      new Html5Qrcode('reader');
-
     await scanner.start(
 
-      {
-        facingMode: 'environment'
-      },
+      { facingMode: 'environment' },
 
       {
-        fps: 10,
+        fps: 12,
 
         qrbox: function(width, height) {
 
           const size =
             Math.floor(
-              Math.min(width, height) * 0.7
+              Math.min(width, height) * 0.70
             );
 
           return {
@@ -148,21 +485,15 @@ async function startScanner() {
         }
       },
 
-      async function(decodedText) {
+      function(decodedText) {
 
-        try {
-
-          await scanner.stop();
-
-        } catch(e) {}
-
-        lookupStaff(
-          decodedText.trim()
+        handleScan(
+          String(decodedText).trim()
         );
       },
 
-      function(errorMessage) {
-        // Ignore while camera is searching.
+      function() {
+        // Ignore scanning errors while searching.
       }
 
     );
@@ -171,62 +502,622 @@ async function startScanner() {
 
   catch(err) {
 
-    showError(
-      'Camera error: ' + err
+    alert(
+      'Camera could not start: ' +
+      err
     );
+
+    closeScanner();
   }
 }
 
 
-function lookupStaff(staffCode) {
+async function handleScan(value) {
 
-  document.getElementById('status')
-    .innerHTML =
-    '<div class="success">' +
-    'Looking up ' +
-    staffCode +
-    '...' +
-    '</div>';
+  await stopScanner();
+
+  document.getElementById('scannerOverlay')
+    .classList.add('hidden');
+
+  if (scanMode === 'staff') {
+    lookupStaff(value);
+  }
+
+  else if (scanMode === 'location') {
+    lookupLocation(value);
+  }
+
+  else if (scanMode === 'item') {
+    lookupItem(value);
+  }
+}
+
+
+async function stopScanner() {
+
+  if (!scanner) return;
+
+  try {
+    await scanner.stop();
+  }
+  catch(e) {}
+
+  try {
+    scanner.clear();
+  }
+  catch(e) {}
+
+  scanner = null;
+}
+
+
+async function closeScanner() {
+
+  await stopScanner();
+
+  document.getElementById('scannerOverlay')
+    .classList.add('hidden');
+}
+
+
+// --------------------------------
+// STAFF
+// --------------------------------
+
+function manualStaff() {
+
+  const code =
+    document.getElementById('staffManual')
+      .value.trim();
+
+  if (code) {
+    lookupStaff(code);
+  }
+}
+
+
+function lookupStaff(code) {
+
+  setStatus(
+    'staffStatus',
+    'Looking up staff...',
+    'success'
+  );
 
   jsonp(
     API_URL +
     '?action=staff' +
     '&code=' +
-    encodeURIComponent(staffCode),
+    encodeURIComponent(code),
 
     function(result) {
 
       if (!result.ok) {
 
-        showError(
-          result.error ||
-          'Staff lookup failed.'
+        setStatus(
+          'staffStatus',
+          result.error,
+          'error'
         );
 
         return;
       }
 
-      const staff =
+      session.staff =
         result.staff;
 
-      document.getElementById('status')
+      document.getElementById('staffDisplay')
         .innerHTML =
-        '<div class="success">' +
-        '<div class="name">' +
-        staff.name +
-        '</div>' +
-        '<div>' +
-        staff.role +
-        '</div>' +
-        '<br>' +
-        '<div>Staff ID: ' +
-        staff.id +
-        '</div>' +
-        '</div>';
+          '<div class="staff-name">' +
+          session.staff.name +
+          '</div>' +
+          '<div>' +
+          session.staff.role +
+          '</div>';
+
+      show('actionScreen');
     }
   );
 }
 
+
+// --------------------------------
+// ACTION
+// --------------------------------
+
+function chooseAction(action) {
+
+  session.action = action;
+
+  if (action === 'REMOVE') {
+
+    show('locationScreen');
+
+  }
+
+  else {
+
+    loadSources();
+
+    show('sourceScreen');
+  }
+}
+
+
+// --------------------------------
+// LOCATION
+// --------------------------------
+
+function manualLocation() {
+
+  const code =
+    document.getElementById('locationManual')
+      .value.trim();
+
+  if (code) {
+    lookupLocation(code);
+  }
+}
+
+
+function lookupLocation(code) {
+
+  setStatus(
+    'locationStatus',
+    'Looking up location...',
+    'success'
+  );
+
+  jsonp(
+    API_URL +
+    '?action=location' +
+    '&code=' +
+    encodeURIComponent(code),
+
+    function(result) {
+
+      if (!result.ok) {
+
+        setStatus(
+          'locationStatus',
+          result.error,
+          'error'
+        );
+
+        return;
+      }
+
+      session.destination =
+        result.location;
+
+      beginItems();
+    }
+  );
+}
+
+
+// --------------------------------
+// SOURCE
+// --------------------------------
+
+function loadSources() {
+
+  jsonp(
+    API_URL +
+    '?action=sources',
+
+    function(result) {
+
+      if (!result.ok) {
+        alert(result.error);
+        return;
+      }
+
+      const select =
+        document.getElementById(
+          'sourceSelect'
+        );
+
+      select.innerHTML = '';
+
+      result.sources.forEach(
+        function(source) {
+
+          const option =
+            document.createElement(
+              'option'
+            );
+
+          option.value =
+            source.code;
+
+          option.textContent =
+            source.name;
+
+          option.dataset.name =
+            source.name;
+
+          select.appendChild(
+            option
+          );
+        }
+      );
+    }
+  );
+}
+
+
+function confirmSource() {
+
+  const select =
+    document.getElementById(
+      'sourceSelect'
+    );
+
+  if (!select.options.length) {
+
+    alert(
+      'Sources have not loaded yet.'
+    );
+
+    return;
+  }
+
+  const option =
+    select.options[
+      select.selectedIndex
+    ];
+
+  session.source = {
+    code: option.value,
+    name: option.dataset.name
+  };
+
+  session.sourceDetail =
+    document.getElementById(
+      'sourceDetail'
+    ).value.trim();
+
+  beginItems();
+}
+
+
+// --------------------------------
+// ITEM
+// --------------------------------
+
+function beginItems() {
+
+  const context =
+    session.action === 'REMOVE'
+      ? session.destination.name
+      : session.source.name;
+
+  document.getElementById(
+    'contextDisplay'
+  ).innerHTML =
+    '<b>' +
+    session.action +
+    '</b> → ' +
+    context;
+
+  show('itemScreen');
+
+  renderCart();
+}
+
+
+function manualItem() {
+
+  const code =
+    document.getElementById(
+      'itemManual'
+    ).value.trim();
+
+  if (code) {
+    lookupItem(code);
+  }
+}
+
+
+function lookupItem(code) {
+
+  setStatus(
+    'itemStatus',
+    'Looking up item...',
+    'success'
+  );
+
+  jsonp(
+    API_URL +
+    '?action=item' +
+    '&code=' +
+    encodeURIComponent(code),
+
+    function(result) {
+
+      document.getElementById(
+        'itemStatus'
+      ).innerHTML = '';
+
+      if (!result.ok) {
+
+        setStatus(
+          'itemStatus',
+          result.error,
+          'error'
+        );
+
+        return;
+      }
+
+      pendingItem =
+        result.item;
+
+      document.getElementById(
+        'quantityItemName'
+      ).innerText =
+        pendingItem.name;
+
+      document.getElementById(
+        'quantityStock'
+      ).innerText =
+        pendingItem.currentStock !== null
+          ? 'Current expected stock: ' +
+            pendingItem.currentStock
+          : '';
+
+      document.getElementById(
+        'quantity'
+      ).value = '';
+
+      show('quantityScreen');
+
+      setTimeout(function() {
+
+        document.getElementById(
+          'quantity'
+        ).focus();
+
+      }, 200);
+    }
+  );
+}
+
+
+// --------------------------------
+// QUANTITY / CART
+// --------------------------------
+
+function confirmQuantity() {
+
+  const qty =
+    Number(
+      document.getElementById(
+        'quantity'
+      ).value
+    );
+
+  if (!pendingItem ||
+      !qty ||
+      qty <= 0) {
+
+    alert(
+      'Enter a valid quantity.'
+    );
+
+    return;
+  }
+
+  const existing =
+    session.items.find(
+      function(item) {
+        return item.code ===
+          pendingItem.code;
+      }
+    );
+
+  if (existing) {
+
+    existing.qty += qty;
+
+  }
+
+  else {
+
+    session.items.push({
+      code: pendingItem.code,
+      name: pendingItem.name,
+      qty: qty
+    });
+  }
+
+  pendingItem = null;
+
+  document.getElementById(
+    'itemManual'
+  ).value = '';
+
+  beginItems();
+}
+
+
+function renderCart() {
+
+  const cart =
+    document.getElementById('cart');
+
+  cart.innerHTML = '';
+
+  if (!session.items.length) {
+
+    cart.innerHTML =
+      '<p>No items scanned yet.</p>';
+
+    return;
+  }
+
+  session.items.forEach(
+    function(item, index) {
+
+      const div =
+        document.createElement(
+          'div'
+        );
+
+      div.className =
+        'item-card';
+
+      div.innerHTML =
+        '<b>' +
+        item.name +
+        '</b><br>' +
+        item.code +
+        '<br>Quantity: ' +
+        item.qty +
+        '<br>' +
+        '<button class="secondary" ' +
+        'onclick="removeItem(' +
+        index +
+        ')">REMOVE FROM SESSION</button>';
+
+      cart.appendChild(div);
+    }
+  );
+}
+
+
+function removeItem(index) {
+
+  session.items.splice(
+    index,
+    1
+  );
+
+  renderCart();
+}
+
+
+// --------------------------------
+// FINISH
+// --------------------------------
+
+function finishSession() {
+
+  if (!session.items.length) {
+
+    alert(
+      'No items have been scanned.'
+    );
+
+    return;
+  }
+
+  if (session.action === 'REMOVE') {
+
+    show('smartScreen');
+
+  }
+
+  else {
+
+    session.smartEntered =
+      'N/A';
+
+    submitSession();
+  }
+}
+
+
+function setSmart(value) {
+
+  session.smartEntered =
+    value;
+
+  submitSession();
+}
+
+
+// --------------------------------
+// POST SAVE
+// --------------------------------
+
+function submitSession() {
+
+  show('completeScreen');
+
+  document.getElementById(
+    'completeMessage'
+  ).innerHTML =
+    'Saving...';
+
+  document.getElementById(
+    'submitForm'
+  ).action =
+    API_URL;
+
+  document.getElementById(
+    'payloadField'
+  ).value =
+    JSON.stringify(session);
+
+  document.getElementById(
+    'submitForm'
+  ).submit();
+}
+
+
+window.addEventListener(
+  'message',
+  function(event) {
+
+    const data =
+      event.data;
+
+    if (!data ||
+        typeof data !== 'object') {
+      return;
+    }
+
+    if (!data.ok) {
+
+      document.getElementById(
+        'completeMessage'
+      ).className =
+        'error';
+
+      document.getElementById(
+        'completeMessage'
+      ).innerText =
+        'ERROR: ' +
+        (data.error ||
+         'Could not save session.');
+
+      return;
+    }
+
+    document.getElementById(
+      'completeMessage'
+    ).className =
+      'success';
+
+    document.getElementById(
+      'completeMessage'
+    ).innerHTML =
+      '<b>Saved successfully.</b>' +
+      '<br><br>' +
+      data.result.items +
+      ' item(s)' +
+      '<br>' +
+      'Session: ' +
+      data.result.sessionId;
+  }
+);
+
+
+// --------------------------------
+// JSONP
+// --------------------------------
 
 function jsonp(url, callback) {
 
@@ -235,7 +1126,13 @@ function jsonp(url, callback) {
     Date.now() +
     '_' +
     Math.floor(
-      Math.random() * 100000
+      Math.random() *
+      100000
+    );
+
+  const script =
+    document.createElement(
+      'script'
     );
 
   window[callbackName] =
@@ -247,15 +1144,13 @@ function jsonp(url, callback) {
 
       finally {
 
-        delete window[callbackName];
+        delete window[
+          callbackName
+        ];
 
         script.remove();
       }
     };
-
-
-  const script =
-    document.createElement('script');
 
   script.src =
     url +
@@ -265,12 +1160,15 @@ function jsonp(url, callback) {
   script.onerror =
     function() {
 
-      delete window[callbackName];
+      delete window[
+        callbackName
+      ];
 
       script.remove();
 
-      showError(
-        'Could not connect to the inventory system.'
+      alert(
+        'Could not connect to ' +
+        'the inventory system.'
       );
     };
 
@@ -280,11 +1178,77 @@ function jsonp(url, callback) {
 }
 
 
-function showError(message) {
+// --------------------------------
+// RESET
+// --------------------------------
 
-  document.getElementById('status')
-    .innerHTML =
-    '<div class="error">' +
+function resetSystem() {
+
+  session = {
+    staff: null,
+    action: null,
+    destination: null,
+    source: null,
+    sourceDetail: '',
+    items: [],
+    smartEntered: null
+  };
+
+  pendingItem = null;
+
+  document.getElementById(
+    'staffManual'
+  ).value = '';
+
+  document.getElementById(
+    'locationManual'
+  ).value = '';
+
+  document.getElementById(
+    'itemManual'
+  ).value = '';
+
+  document.getElementById(
+    'sourceDetail'
+  ).value = '';
+
+  document.getElementById(
+    'staffStatus'
+  ).innerHTML = '';
+
+  document.getElementById(
+    'locationStatus'
+  ).innerHTML = '';
+
+  document.getElementById(
+    'itemStatus'
+  ).innerHTML = '';
+
+  document.getElementById(
+    'completeMessage'
+  ).className =
+    'success';
+
+  show('staffScreen');
+}
+
+
+// --------------------------------
+// HELPERS
+// --------------------------------
+
+function setStatus(
+  elementId,
+  message,
+  type
+) {
+
+  document.getElementById(
+    elementId
+  ).innerHTML =
+    '<div class="' +
+    type +
+    '">' +
     message +
     '</div>';
 }
