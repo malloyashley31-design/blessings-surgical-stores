@@ -769,16 +769,26 @@ function beginItems() {
 
 function manualItem() {
 
-  const code =
+  let code =
     document.getElementById(
       'itemManual'
     ).value.trim();
+
+  const match =
+    code.match(/ST\d{5}/i);
+
+  if (match) {
+    code = match[0].toUpperCase();
+  }
+
+  document.getElementById(
+    'itemManual'
+  ).value = code;
 
   if (code) {
     lookupItem(code);
   }
 }
-
 
 function lookupItem(code) {
 
