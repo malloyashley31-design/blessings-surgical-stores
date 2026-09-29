@@ -523,12 +523,14 @@ if (mode === 'staff') {
         document.getElementById('scannerOverlay')
           .classList.add('hidden');
 
-       if (mode === 'staff') {
+      if (mode === 'staff') {
 
   document.getElementById('staffManual').value =
     value;
 
-  manualStaff();
+  setTimeout(function() {
+    manualStaff();
+  }, 700);
 
   return;
 }
