@@ -520,8 +520,15 @@ async function handleScan(value) {
     .classList.add('hidden');
 
   if (scanMode === 'staff') {
-    lookupStaff(value);
-  }
+
+  alert(
+    'Scanned staff value: [' +
+    value +
+    ']'
+  );
+
+  lookupStaff(value);
+}
 
   else if (scanMode === 'location') {
     lookupLocation(value);
