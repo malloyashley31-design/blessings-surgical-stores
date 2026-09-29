@@ -523,24 +523,29 @@ if (mode === 'staff') {
         document.getElementById('scannerOverlay')
           .classList.add('hidden');
 
-      if (mode === 'staff') {
+     if (mode === 'staff') {
 
   document.getElementById('staffManual').value =
     value;
 
-  setTimeout(function() {
-    manualStaff();
-  }, 700);
+  return;
+}
+
+else if (mode === 'location') {
+
+  document.getElementById('locationManual').value =
+    value;
 
   return;
 }
-        else if (mode === 'location') {
-          lookupLocation(value);
-        }
 
-        else if (mode === 'item') {
-          lookupItem(value);
-        }
+else if (mode === 'item') {
+
+  document.getElementById('itemManual').value =
+    value;
+
+  return;
+}
 
         setTimeout(function() {
           stopScanner();
