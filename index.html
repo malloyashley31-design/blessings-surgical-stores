@@ -421,7 +421,6 @@ let session = {
 let scanner = null;
 let scanMode = null;
 let pendingItem = null;
-let scanLocked = false;
 
 
 // --------------------------------
@@ -447,7 +446,7 @@ function show(id) {
 async function openScanner(mode) {
 
   scanMode = mode;
-  scanLocked = false;
+  
 
   const titles = {
     staff: 'Scan Staff QR',
@@ -516,14 +515,6 @@ async function openScanner(mode) {
 
 async function handleScan(value) {
 
-  if (scanLocked) {
-    return;
-  }
-
-  scanLocked = true;
-
-  value = String(value).trim();
-
   await stopScanner();
 
   document.getElementById('scannerOverlay')
@@ -540,42 +531,6 @@ async function handleScan(value) {
   else if (scanMode === 'item') {
     lookupItem(value);
   }
-}
-
-  else if (scanMode === 'location') {
-    lookupLocation(value);
-  }
-
-  else if (scanMode === 'item') {
-    lookupItem(value);
-  }
-}
-
-
-async function stopScanner() {
-
-  if (!scanner) return;
-
-  try {
-    await scanner.stop();
-  }
-  catch(e) {}
-
-  try {
-    scanner.clear();
-  }
-  catch(e) {}
-
-  scanner = null;
-}
-
-
-async function closeScanner() {
-
-  await stopScanner();
-
-  document.getElementById('scannerOverlay')
-    .classList.add('hidden');
 }
 
 
