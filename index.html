@@ -523,22 +523,15 @@ if (mode === 'staff') {
         document.getElementById('scannerOverlay')
           .classList.add('hidden');
 
-        if (mode === 'staff') {
+       if (mode === 'staff') {
 
   document.getElementById('staffManual').value =
     value;
 
-  document.getElementById('staffStatus').innerHTML =
-    '<div class="success">' +
-    '<b>QR READ:</b><br>' +
-    JSON.stringify(value) +
-    '<br><br><b>Length:</b> ' +
-    value.length +
-    '</div>';
+  manualStaff();
 
   return;
 }
-
         else if (mode === 'location') {
           lookupLocation(value);
         }
