@@ -586,10 +586,10 @@ function manualStaff() {
 function lookupStaff(code) {
 
   setStatus(
-    'staffStatus',
-    'Looking up staff...',
-    'success'
-  );
+  'staffStatus',
+  'Scanned value: [' + code + '] — looking up staff...',
+  'success'
+);
 
   jsonp(
     API_URL +
